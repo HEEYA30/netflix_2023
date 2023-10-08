@@ -1,0 +1,5 @@
+- TMDB에서 이미지 받아오기
+
+https://image.tmdb.org/t/p/
+w500/  == 너비
+1E5baAaEse26fej7uHcjOgEE2t2.jpg  == 이미지 아이디
