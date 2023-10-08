@@ -225,7 +225,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { motion, useAnimation, useScroll } from "framer-motion";
 // animation +state
-// useScrol 
+// useScroll
 import { useEffect, useState } from "react";
 
 const Nav = styled(motion.nav)`

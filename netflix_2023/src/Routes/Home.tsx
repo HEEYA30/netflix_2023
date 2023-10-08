@@ -168,7 +168,7 @@ import { makeImagePath } from "../utilities";
 import { useState } from "react";
 
 const Wrapper = styled.div`
-  background: #0f0b0b;
+  background: black;
   padding-bottom: 200px;
 `;
 
@@ -220,6 +220,26 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-position: center center;
   height: 200px;
   font-size: 66px;
+
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
+`;
+
+const Info = styled(motion.div)`
+  padding: 10px;
+  background-color: ${(props) => props.theme.black.lighter};
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  h4 {
+    text-align: center;
+    font-size: 18px;
+  }
 `;
 
 const rowVariants = {
@@ -234,9 +254,49 @@ const rowVariants = {
   },
 };
 
+const boxVariants = {
+  normal: {
+    scale: 1,
+  },
+  hover: {
+    scale: 1.3,
+    y: -80,
+    transition: {
+      delay: 0.5,
+      duaration: 0.1,
+      type: "tween",
+    },
+  },
+};
+
+const infoVariants = {
+  hover: {
+    opacity: 1,
+    transition: {
+      delay: 0.5,
+      duaration: 0.1,
+      type: "tween",
+    },
+  },
+};
+
 const offset = 6;
 
 function Home() {
+  /*  
+    - useQuery의 첫 번째 인자로 쿼리 키를 넣어주고, 두 번째로는 fetcher를 넣어줍니다. 세 번째에서 옵션을 설정해주고 결과값을 반환 받습니다. 
+     - fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then((response) => response.json() 
+     -> 이처럼 반환값은 json형식, data라는 변수에 저장됨
+     -> data를 통해(data의 속성이 아님!) movie에 접근 
+      EX. {data?.results.map( (movie) => (
+                    <Box key={movie.id}></Box>
+                     )
+           }
+
+     -> 해석하면 json형식의 data에서 results속성값만큼 반복해서 렌더링(map)하는데 매개변수로 movie를 사용한다. 렌더링하는게 <Box></Box>이고 그 box들을 구별하는 키가 매개변수로 넣은 movie다. 
+
+        근데 movie가 어디서 왔냐고!!!!!!
+  */
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "nowPlaying"],
     getMovies
@@ -252,6 +312,7 @@ function Home() {
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
+
   const toggleLeaving = () => setLeaving((prev) => !prev);
   return (
     <Wrapper>
@@ -261,7 +322,7 @@ function Home() {
         <>
           <Banner
             onClick={incraseIndex}
-            bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
+            bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}//backdrop_path가 존재하지 않는 이미지는 movie.backdrop_path || movie.poster_path로 처리해서 poster_path 이미지로 대체할 수 있습니다.
           >
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
@@ -281,9 +342,20 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                    //movie는 어디서 왔을까.. map메소드의 movie파라미터 넣은 함수라서 가능
+                    // movie파라미터는 api에서 온 getMovies에서 가져옴
                       key={movie.id}
+                      whileHover="hover"
+                      initial="normal"
+                      variants={boxVariants}
+                      transition={{ type: "tween" }}// tween은 기본CSS인 spring을 없앰
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                    />
+                    > 
+                    {/* Box는 부모, Info는 자식, 자식은 부모의 속성 사용가능  */}
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
               </Row>
             </AnimatePresence>
