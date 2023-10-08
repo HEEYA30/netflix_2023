@@ -15,7 +15,8 @@ function App() {
         <Route path="/search">
           <Search />
         </Route>
-        <Route path="/">
+        {/* /는 가장 마지막에 와야함 다른 라우터주소도 /로 시작하기 때문 */}
+        <Route path="/"> 
           <Home />
         </Route>
       </Switch>
